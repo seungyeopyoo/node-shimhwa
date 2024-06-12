@@ -13,7 +13,7 @@ import {
 import { ACCESS_TOKEN_SECRET } from '../constants/env.constant.js';
 
 const authRouter = express.Router();
-
+// 회원가입 API
 authRouter.post('/sign-up', signUpValidator, async (req, res, next) => {
   try {
     const { email, password, name } = req.body;
@@ -49,7 +49,7 @@ authRouter.post('/sign-up', signUpValidator, async (req, res, next) => {
     next(error);
   }
 });
-
+// 로그인 API
 authRouter.post('/sign-in', signInValidator, async (req, res, next) => {
   try {
     const { email, password } = req.body;
