@@ -1,6 +1,7 @@
 import {
   createResumeService,
   getResumesService,
+  getResumeService,
 } from '../services/resumes.service.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
@@ -44,6 +45,35 @@ export async function getResumesController(req, res, next) {
     return res.status(HTTP_STATUS.OK).json({
       status: HTTP_STATUS.OK,
       message: MESSAGES.RESUMES.READ_LIST.SUCCEED,
+      data,
+    });
+  } catch (error) {
+    // 오류를 다음 미들웨어로 전달
+    next(error);
+  }
+}
+
+// 특정 이력서 조회 컨트롤러
+export async function getResumeController(req, res, next) {
+  try {
+    const user = req.user; // 요청에서 사용자 정보 추출
+    const authorId = user.id;
+    const { id } = req.params; // 요청 경로에서 이력서 ID 추출
+
+    // 이력서 조회 서비스 호출
+    const data = await getResumeService(Number(id), authorId);
+
+    if (!data) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
+        status: HTTP_STATUS.NOT_FOUND,
+        message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
+      });
+    }
+
+    // 성공 응답 반환
+    return res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.RESUMES.READ_DETAIL.SUCCEED,
       data,
     });
   } catch (error) {

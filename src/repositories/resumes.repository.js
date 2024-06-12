@@ -17,3 +17,11 @@ export async function getResumesByAuthorId(authorId, sort) {
     },
   });
 }
+
+// 이력서 상세 조회
+export async function getResumeByIdAndAuthor(id, authorId) {
+  return prisma.resume.findUnique({
+    where: { id, authorId },
+    include: { author: true },
+  });
+}

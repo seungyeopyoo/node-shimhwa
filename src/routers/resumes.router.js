@@ -7,6 +7,7 @@ import { updateResumeValidator } from '../middlewares/validators/updated-resume-
 import {
   createResumeController,
   getResumesController,
+  getResumeController,
 } from '../controllers/resumes.controller.js';
 
 const resumesRouter = express.Router();
@@ -18,44 +19,7 @@ resumesRouter.post('/', createResumeValidator, createResumeController);
 resumesRouter.get('/', getResumesController);
 
 // 이력서 상세 조회
-resumesRouter.get('/:id', async (req, res, next) => {
-  try {
-    const user = req.user;
-    const authorId = user.id;
-
-    const { id } = req.params;
-
-    let data = await prisma.resume.findUnique({
-      where: { id: +id, authorId },
-      include: { author: true },
-    });
-
-    if (!data) {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({
-        status: HTTP_STATUS.NOT_FOUND,
-        message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
-      });
-    }
-
-    data = {
-      id: data.id,
-      authorName: data.author.name,
-      title: data.title,
-      content: data.content,
-      status: data.status,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
-
-    return res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.RESUMES.READ_DETAIL.SUCCEED,
-      data,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+resumesRouter.get('/:id', getResumeController);
 
 // 이력서 수정
 resumesRouter.put('/:id', updateResumeValidator, async (req, res, next) => {
