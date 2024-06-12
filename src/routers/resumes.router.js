@@ -8,6 +8,7 @@ import {
   createResumeController,
   getResumesController,
   getResumeController,
+  updateResumeController,
 } from '../controllers/resumes.controller.js';
 
 const resumesRouter = express.Router();
@@ -22,43 +23,7 @@ resumesRouter.get('/', getResumesController);
 resumesRouter.get('/:id', getResumeController);
 
 // 이력서 수정
-resumesRouter.put('/:id', updateResumeValidator, async (req, res, next) => {
-  try {
-    const user = req.user;
-    const authorId = user.id;
-
-    const { id } = req.params;
-
-    const { title, content } = req.body;
-
-    let existedResume = await prisma.resume.findUnique({
-      where: { id: +id, authorId },
-    });
-
-    if (!existedResume) {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({
-        status: HTTP_STATUS.NOT_FOUND,
-        message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
-      });
-    }
-
-    const data = await prisma.resume.update({
-      where: { id: +id, authorId },
-      data: {
-        ...(title && { title }),
-        ...(content && { content }),
-      },
-    });
-
-    return res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.RESUMES.UPDATE.SUCCEED,
-      data,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+resumesRouter.put('/:id', updateResumeValidator, updateResumeController);
 
 // 이력서 삭제
 resumesRouter.delete('/:id', async (req, res, next) => {

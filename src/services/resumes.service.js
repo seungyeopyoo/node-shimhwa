@@ -2,6 +2,7 @@ import {
   createResume,
   getResumesByAuthorId,
   getResumeByIdAndAuthor,
+  updateResumeByIdAndAuthor,
 } from '../repositories/resumes.repository.js';
 
 export async function createResumeService(authorId, title, content) {
@@ -50,4 +51,28 @@ export async function getResumeService(id, authorId) {
     createdAt: resume.createdAt,
     updatedAt: resume.updatedAt,
   };
+}
+
+// 이력서 업데이트 서비스 함수
+export async function updateResumeService(id, authorId, title, content) {
+  // 기존 이력서 확인
+  const existedResume = await getResumeByIdAndAuthor(id, authorId);
+
+  if (!existedResume) {
+    throw {
+      status: HTTP_STATUS.NOT_FOUND,
+      message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
+    };
+  }
+
+  // 업데이트할 데이터 준비
+  const updateData = {};
+  if (title) updateData.title = title;
+  if (content) updateData.content = content;
+
+  // 이력서 업데이트
+  const data = await updateResumeByIdAndAuthor(id, authorId, updateData);
+
+  // 데이터 가공
+  return data;
 }

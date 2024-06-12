@@ -25,3 +25,11 @@ export async function getResumeByIdAndAuthor(id, authorId) {
     include: { author: true },
   });
 }
+
+// 이력서 수정 함수
+export async function updateResumeByIdAndAuthor(id, authorId, data) {
+  return prisma.resume.update({
+    where: { id, authorId },
+    data,
+  });
+}
