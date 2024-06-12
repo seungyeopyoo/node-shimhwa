@@ -33,3 +33,10 @@ export async function updateResumeByIdAndAuthor(id, authorId, data) {
     data,
   });
 }
+
+// 이력서 삭제 함수
+export async function deleteResumeByIdAndAuthor(id, authorId) {
+  return prisma.resume.delete({
+    where: { id, authorId },
+  });
+}

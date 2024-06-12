@@ -3,6 +3,7 @@ import {
   getResumesByAuthorId,
   getResumeByIdAndAuthor,
   updateResumeByIdAndAuthor,
+  deleteResumeByIdAndAuthor,
 } from '../repositories/resumes.repository.js';
 
 export async function createResumeService(authorId, title, content) {
@@ -75,4 +76,23 @@ export async function updateResumeService(id, authorId, title, content) {
 
   // 데이터 가공
   return data;
+}
+
+// 이력서 삭제 서비스 함수
+export async function deleteResumeService(id, authorId) {
+  // 기존 이력서 확인
+  const existedResume = await getResumeByIdAndAuthor(id, authorId);
+
+  if (!existedResume) {
+    throw {
+      status: HTTP_STATUS.NOT_FOUND,
+      message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
+    };
+  }
+
+  // 이력서 삭제
+  const data = await deleteResumeByIdAndAuthor(id, authorId);
+
+  // 삭제된 이력서 ID 반환
+  return { id: data.id };
 }

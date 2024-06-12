@@ -3,6 +3,7 @@ import {
   getResumesService,
   getResumeService,
   updateResumeService,
+  deleteResumeService,
 } from '../services/resumes.service.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
@@ -104,6 +105,28 @@ export async function updateResumeController(req, res, next) {
       status: HTTP_STATUS.OK,
       message: MESSAGES.RESUMES.UPDATE.SUCCEED,
       data,
+    });
+  } catch (error) {
+    // 오류를 다음 미들웨어로 전달
+    next(error);
+  }
+}
+
+// 이력서 삭제 컨트롤러
+export async function deleteResumeController(req, res, next) {
+  try {
+    const user = req.user; // 요청에서 사용자 정보 추출
+    const authorId = user.id;
+    const { id } = req.params; // 요청 경로에서 이력서 ID 추출
+
+    // 이력서 삭제 서비스 호출
+    const data = await deleteResumeService(Number(id), authorId);
+
+    // 성공 응답 반환
+    return res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.RESUMES.DELETE.SUCCEED,
+      data: { id: data.id },
     });
   } catch (error) {
     // 오류를 다음 미들웨어로 전달
