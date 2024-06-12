@@ -4,3 +4,16 @@ import { prisma } from '../utils/prisma.util.js';
 export async function createResume(data) {
   return prisma.resume.create({ data });
 }
+
+// 이력서 목록 조회
+export async function getResumesByAuthorId(authorId, sort) {
+  return prisma.resume.findMany({
+    where: { authorId },
+    orderBy: {
+      createdAt: sort,
+    },
+    include: {
+      author: true,
+    },
+  });
+}

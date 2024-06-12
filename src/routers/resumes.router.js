@@ -4,7 +4,10 @@ import { MESSAGES } from '../constants/message.constant.js';
 import { createResumeValidator } from '../middlewares/validators/create-resume-validator.middleware.js';
 import { prisma } from '../utils/prisma.util.js';
 import { updateResumeValidator } from '../middlewares/validators/updated-resume-validator.middleware.js';
-import { createResumeController } from '../controllers/resumes.controller.js';
+import {
+  createResumeController,
+  getResumesController,
+} from '../controllers/resumes.controller.js';
 
 const resumesRouter = express.Router();
 
@@ -12,50 +15,7 @@ const resumesRouter = express.Router();
 resumesRouter.post('/', createResumeValidator, createResumeController);
 
 // 이력서 목록 조회
-resumesRouter.get('/', async (req, res, next) => {
-  try {
-    const user = req.user;
-    const authorId = user.id;
-
-    let { sort } = req.query;
-
-    sort = sort?.toLowerCase();
-
-    if (sort !== 'desc' && sort !== 'asc') {
-      sort = 'desc';
-    }
-
-    let data = await prisma.resume.findMany({
-      where: { authorId },
-      orderBy: {
-        createdAt: sort,
-      },
-      include: {
-        author: true,
-      },
-    });
-
-    data = data.map((resume) => {
-      return {
-        id: resume.id,
-        authorName: resume.author.name,
-        title: resume.title,
-        content: resume.content,
-        status: resume.status,
-        createdAt: resume.createdAt,
-        updatedAt: resume.updatedAt,
-      };
-    });
-
-    return res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.RESUMES.READ_LIST.SUCCEED,
-      data,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+resumesRouter.get('/', getResumesController);
 
 // 이력서 상세 조회
 resumesRouter.get('/:id', async (req, res, next) => {
