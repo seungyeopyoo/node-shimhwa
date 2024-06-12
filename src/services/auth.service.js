@@ -1,8 +1,11 @@
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { ACCESS_TOKEN_SECRET } from '../constants/env.constant.js';
 import { prisma } from '../utils/prisma.util.js';
 import { HASH_SALT_ROUNDS } from '../constants/auth.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
+import { ACCESS_TOKEN_EXPIRES_IN } from '../constants/auth.constant.js';
 
 // 회원가입 서비스
 export async function signUpService(email, password, name) {
@@ -37,5 +40,37 @@ export async function signUpService(email, password, name) {
     status: HTTP_STATUS.CREATED,
     message: MESSAGES.AUTH.SIGN_UP.SUCCEED,
     data,
+  };
+}
+
+// 로그인 서비스
+export async function signInService(email, password) {
+  // 이메일로 사용자 검색
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  // 비밀번호 비교
+  const isPasswordMatched = user && bcrypt.compareSync(password, user.password);
+
+  // 비밀번호가 일치하지 않는 경우 예외 처리
+  if (!isPasswordMatched) {
+    throw {
+      status: HTTP_STATUS.UNAUTHORIZED,
+      message: MESSAGES.AUTH.COMMON.UNAUTHORIZED,
+    };
+  }
+
+  // JWT 페이로드 생성
+  const payload = { id: user.id };
+
+  // JWT 액세스 토큰 생성
+  const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+    expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+  });
+
+  // 성공 응답 반환
+  return {
+    status: HTTP_STATUS.OK,
+    message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
+    data: { accessToken },
   };
 }
