@@ -1,4 +1,4 @@
-import express from 'express'
+import express from 'express';
 import { SERVER_PORT } from './constants/env.constant.js';
 import { errorHandler } from './middlewares/error-handler.middleware.js';
 import { HTTP_STATUS } from './constants/http-status.constant.js';
@@ -18,5 +18,5 @@ app.use('/api', apiRouter);
 app.use(errorHandler);
 
 app.listen(SERVER_PORT, () => {
-  console.log(`서버가 ${SERVER_PORT}번 포트에서 실행 중입니다.`);
+  console.log(`서버가 ${3306}번 포트에서 실행 중입니다.`);
 });
