@@ -1,6 +1,7 @@
 import ResumeService from '../services/resumes.service.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
+import { HttpError } from '../errors/http.error.js';
 
 class ResumeController {
   // 이력서 생성 컨트롤러
@@ -65,10 +66,7 @@ class ResumeController {
       const data = await ResumeService.getResumeService(Number(id), authorId);
 
       if (!data) {
-        return res.status(HTTP_STATUS.NOT_FOUND).json({
-          status: HTTP_STATUS.NOT_FOUND,
-          message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
-        });
+        throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
       }
 
       // 성공 응답 반환
