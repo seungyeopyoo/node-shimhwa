@@ -18,5 +18,5 @@ app.use('/api', apiRouter);
 app.use(errorHandler);
 
 app.listen(SERVER_PORT, () => {
-  console.log(`서버가 ${3306}번 포트에서 실행 중입니다.`);
+  console.log(`서버가 ${3000}번 포트에서 실행 중입니다.`);
 });
