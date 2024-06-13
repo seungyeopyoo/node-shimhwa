@@ -1,29 +1,31 @@
 import express from 'express';
 import { createResumeValidator } from '../middlewares/validators/create-resume-validator.middleware.js';
 import { updateResumeValidator } from '../middlewares/validators/updated-resume-validator.middleware.js';
-import {
-  createResumeController,
-  getResumesController,
-  getResumeController,
-  updateResumeController,
-  deleteResumeController,
-} from '../controllers/resumes.controller.js';
+import ResumeController from '../controllers/resumes.controller.js';
 
 const resumesRouter = express.Router();
 
 // 이력서 생성
-resumesRouter.post('/', createResumeValidator, createResumeController);
+resumesRouter.post(
+  '/',
+  createResumeValidator,
+  ResumeController.createResumeController,
+);
 
 // 이력서 목록 조회
-resumesRouter.get('/', getResumesController);
+resumesRouter.get('/', ResumeController.getResumesController);
 
 // 이력서 상세 조회
-resumesRouter.get('/:id', getResumeController);
+resumesRouter.get('/:id', ResumeController.getResumeController);
 
 // 이력서 수정
-resumesRouter.put('/:id', updateResumeValidator, updateResumeController);
+resumesRouter.put(
+  '/:id',
+  updateResumeValidator,
+  ResumeController.updateResumeController,
+);
 
 // 이력서 삭제
-resumesRouter.delete('/:id', deleteResumeController);
+resumesRouter.delete('/:id', ResumeController.deleteResumeController);
 
 export { resumesRouter };
