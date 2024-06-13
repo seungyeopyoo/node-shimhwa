@@ -6,6 +6,7 @@ import { MESSAGES } from '../constants/message.constant.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { ACCESS_TOKEN_EXPIRES_IN } from '../constants/auth.constant.js';
 import AuthRepository from '../repositories/auth.repository.js';
+import { HttpError } from '../errors/http.error.js';
 
 class AuthService {
   // 회원가입 서비스
@@ -14,12 +15,8 @@ class AuthService {
     const existedUser = await AuthRepository.findUserByEmail(email);
 
     // 이메일이 이미 존재하는 경우 예외 처리
-    if (existedUser) {
-      throw {
-        status: HTTP_STATUS.CONFLICT,
-        message: MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED,
-      };
-    }
+    if (existedUser)
+      throw new HttpError.BadRequest(MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED);
 
     // 비밀번호 해시화
     const hashedPassword = bcrypt.hashSync(password, HASH_SALT_ROUNDS);
@@ -52,12 +49,10 @@ class AuthService {
       user && bcrypt.compareSync(password, user.password);
 
     // 비밀번호가 일치하지 않는 경우 예외 처리
-    if (!isPasswordMatched) {
-      throw {
-        status: HTTP_STATUS.UNAUTHORIZED,
-        message: MESSAGES.AUTH.COMMON.UNAUTHORIZED,
-      };
-    }
+    if (!isPasswordMatched)
+      throw new HttpError.Unauthorized(
+        MESSAGES.AUTH.COMMON.PASSWORD_CONFIRM.NOT_MATCHED_WITH_PASSWORD,
+      );
 
     // JWT 페이로드 생성
     const payload = { id: user.id };

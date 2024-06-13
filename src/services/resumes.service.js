@@ -1,6 +1,6 @@
-import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import ResumeRepository from '../repositories/resumes.repository.js';
+import { HttpError } from '../errors/http.error.js';
 
 class ResumeService {
   async createResumeService(authorId, title, content) {
@@ -59,12 +59,8 @@ class ResumeService {
       authorId,
     );
 
-    if (!existedResume) {
-      throw {
-        status: HTTP_STATUS.NOT_FOUND,
-        message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
-      };
-    }
+    if (!existedResume)
+      throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
 
     // 업데이트할 데이터 준비
     const updateData = {};
@@ -90,12 +86,8 @@ class ResumeService {
       authorId,
     );
 
-    if (!existedResume) {
-      throw {
-        status: HTTP_STATUS.NOT_FOUND,
-        message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
-      };
-    }
+    if (!existedResume)
+      throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
 
     // 이력서 삭제
     const data = await ResumeRepository.deleteResumeByIdAndAuthor(id, authorId);
